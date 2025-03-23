@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-front50
+  namespace: spinnaker
+spec:
+  template:
+    spec:
+      containers:
+      - name: spin-front50
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: spin-front50-s3
+              key: accessKeyId
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: spin-front50-s3
+              key: secretAccessKey
+        - name: AWS_ENDPOINT
+          value: "http://minio.spinnaker:9000"
+        - name: S3_USE_REGION_DETECTION
+          value: "false" 

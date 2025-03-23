@@ -1,0 +1,52 @@
+Temporary Spinnaker on Docker Desktop 
+https://www.youtube.com/watch?v=PZUy3r_oqU0
+
+# run instance of mysql on the cluster
+kubectl run mysql --image=mariadb:10.2 --env="MYSQL_ROOT_PASSWORD"="123" --env="MYSQL_DATABASE"="front50"
+
+kubectl get pods -o wide
+# 10.1.0.219
+
+# run halyard
+docker run --name halyard --rm \
+    -v ~/.kube:/home/spinnaker/.kube \
+    -it us-docker.pkg.dev/spinnaker-community/docker/halyard:stable
+
+docker exec -it halyard bash
+
+Hal config version
+
+# set the version based on what's available from the previous command
+hal config version edit --version 1.37.7
+
+# install k8s for local docker kubernetes
+hal config provider kubernetes enable
+
+# add a spinnaker account to docker desktop context 
+hal config provider kubernetes account add spinnakerk8s --context docker-desktop
+
+hal config deploy edit --type distributed --account-name spinnakerk8s
+
+hal config storage edit --type redis
+
+hal config features edit --artifacts true
+
+hal deploy apply
+
+
+#/home/spinnaker/.hal/default/profiles/front50-local.yml
+sql:
+  enabled: true
+  connectionPools:
+    default:
+      default: true
+      jdbcUrl: jdbc:mysql://MYSQL_IP_ADDRESS:3306/front50
+      user: root
+      password: 123
+  migration:
+    user: root
+    password: 123
+    jdbcUrl: jdbc:mysql://MYSQL_IP_ADDRESS:3306/front50
+spinnaker:
+  redis:
+    enabled: false

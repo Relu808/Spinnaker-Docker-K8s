@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: halyard
+  namespace: spinnaker
+spec:
+  selector:
+    matchLabels:
+      app: halyard
+  template:
+    metadata:
+      labels:
+        app: halyard
+    spec:
+      containers:
+      - name: halyard
+        image: us-docker.pkg.dev/spinnaker-community/docker/halyard:stable
+        ports:
+        - containerPort: 8084
+        - containerPort: 9000
+        volumeMounts:
+        - name: halconfig
+          mountPath: /home/spinnaker/.hal
+      volumes:
+      - name: halconfig
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: halyard
+  namespace: spinnaker
+spec:
+  ports:
+  - name: halyard-api
+    port: 8084
+    targetPort: 8084
+    protocol: TCP
+  - name: halyard-ui
+    port: 9000
+    targetPort: 9000
+    protocol: TCP
+  selector:
+    app: halyard 

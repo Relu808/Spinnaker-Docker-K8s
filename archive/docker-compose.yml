@@ -1,0 +1,11 @@
+services:
+  halyard:
+    image: us-docker.pkg.dev/spinnaker-community/docker/halyard:stable
+    container_name: halyard
+    ports:
+      - "8084:8084"
+      - "9999:9000"
+    volumes:
+      - ~/.hal:/home/spinnaker/.hal
+    tty: true
+    stdin_open: true 
